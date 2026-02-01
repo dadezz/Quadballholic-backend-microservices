@@ -23,6 +23,7 @@
     <modules>
         <module>discoveryServer</module>
         <module>apiGateway</module>
+        <module>common-library</module>
     </modules>
 
     <dependencyManagement>
