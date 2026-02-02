@@ -34,19 +34,6 @@ public class EmailServiceImpl implements EmailService {
         sendTextEmail(userMail, subject, body);
     }
 
-    public void sendAccountCreatedEmail(String userMail, String token) {
-        String subject = "Access your Quadballholic Account";
-        String link = frontendUrl + "/reset-password?token=" + token;
-
-        String body = "Hello,\n\n" +
-                "You've been registered to our system by managers. Click the link below to access your account:\n\n" +
-                link + "\n\n" +
-                "If you did not request this, you can safely ignore this email.\n" +
-                "This link will expire in 15 minutes.";
-
-        sendTextEmail(userMail, subject, body);
-    }
-
     public void sendPasswordResetEmail(String userMail,String token) {
         String subject = "Reset your Quadballholic Password";
         String link = frontendUrl + "/reset-password?token=" + token;
