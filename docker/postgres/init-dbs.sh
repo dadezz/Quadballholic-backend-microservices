@@ -1,0 +1,13 @@
+#!/bin/bash
+set -e
+
+psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" --dbname "postgres" <<-EOSQL
+    CREATE DATABASE user_db;
+    CREATE DATABASE tournament_db;
+    CREATE DATABASE match_db;
+    CREATE DATABASE stadium_db;
+    GRANT ALL PRIVILEGES ON DATABASE user_db TO $POSTGRES_USER;
+    GRANT ALL PRIVILEGES ON DATABASE tournament_db TO $POSTGRES_USER;
+    GRANT ALL PRIVILEGES ON DATABASE match_db TO $POSTGRES_USER;
+    GRANT ALL PRIVILEGES ON DATABASE stadium_db TO $POSTGRES_USER;
+EOSQL
