@@ -27,9 +27,9 @@ public class TokenServiceImpl implements TokenService {
         return token;
     }
 
-    public EntityToken validateToken(String tokenStr, EnumTokenType type) {
+    public EntityToken validateToken(String tokenStr) {
         EntityToken token = tokenRepository
-                .findEntityTokenByTokenAndTokenType(tokenStr, type)
+                .findEntityTokenByToken(tokenStr)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST,"Invalid token"));
 
         if (token.isUsed() || token.getExpiresAt().isBefore(Instant.now())) {

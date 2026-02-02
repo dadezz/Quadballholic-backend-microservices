@@ -8,4 +8,5 @@ public interface EmailService {
     void sendPasswordResetEmail(String email,String token);
     void sendReservationConfirmEmail(String userMail, LocalDate matchDateTime);
     void sendTextEmail(String to, String subject, String body);
+    void sendAccountCreatedEmail(String userMail, String token);
 }

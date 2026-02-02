@@ -104,7 +104,7 @@ public class AuthServiceImpl implements AuthService {
     @Transactional
     public void activateUser(String tokenStr){
 
-        EntityToken token = tokenService.validateToken(tokenStr, EnumTokenType.ACCOUNT_ACTIVATION);
+        EntityToken token = tokenService.validateToken(tokenStr);
         token.useToken();
         userService.activateUser(token.getUserId());
 
@@ -123,7 +123,7 @@ public class AuthServiceImpl implements AuthService {
         if(!resetPasswordRequest.newPassword().equals(resetPasswordRequest.newPasswordConfirmation())){
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Password confirmation is not matching password");
         }
-        EntityToken token = tokenService.validateToken(resetPasswordRequest.token(), EnumTokenType.PASSWORD_RESET);
+        EntityToken token = tokenService.validateToken(resetPasswordRequest.token());
         token.useToken();
         userService.resetUserPassword(token.getUserId(),passwordEncoder.encode(resetPasswordRequest.newPassword()));
     }
