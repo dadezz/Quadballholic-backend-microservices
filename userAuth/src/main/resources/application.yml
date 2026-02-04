@@ -1,0 +1,58 @@
+server:
+  port: 8081
+
+spring:
+  application:
+    name: user-service
+
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:5432/user_db
+    username: ${POSTGRES_USER}
+    password: ${POSTGRES_PASSWORD}
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+    show-sql: true
+
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: ${MAIL_USERNAME}
+    password: ${MAIL_PASSWORD}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:8761/eureka/
+
+bezkoder:
+  app:
+    jwtSecret: ${JWT_SECRET}
+    AccessTokenExpirationMs: 3600000
+
+
+common:
+  frontend:
+    url: ${FE_URL}
+
+
+auth:
+  activationTokenExpirationMs: 3600000
+  passwordResetTokenExpirationMs: 3600000
+
+quadballholic:
+  app:
+    jwtSecret: ${JWT_SECRET}
+    jwtExpirationMs: 3600000

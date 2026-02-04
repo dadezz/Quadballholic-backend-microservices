@@ -24,6 +24,7 @@
         <module>discoveryServer</module>
         <module>apiGateway</module>
         <module>common-library</module>
+        <module>userAuth</module>
     </modules>
 
     <dependencyManagement>
