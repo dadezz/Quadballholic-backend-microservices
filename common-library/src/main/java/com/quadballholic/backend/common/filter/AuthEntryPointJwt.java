@@ -1,4 +1,4 @@
-package com.quadballholic.backend.authService.filter;
+package com.quadballholic.backend.common.filter;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

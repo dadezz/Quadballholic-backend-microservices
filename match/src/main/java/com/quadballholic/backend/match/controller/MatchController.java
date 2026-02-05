@@ -28,7 +28,7 @@ public class MatchController {
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasAuthority('ROLE_ORGANIZATION_MANAGER')")
+    @PreAuthorize("hasRole('ORGANIZATION_MANAGER')")
     public ResponseEntity<MatchEntity> updateMatch(@PathVariable Long id, @RequestBody MatchEntity match) {
         return ResponseEntity.ok(matchService.updateMatch(match, id));
     }

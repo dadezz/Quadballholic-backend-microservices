@@ -1,4 +1,4 @@
-package com.quadballholic.backend.authService.api;
+package com.quadballholic.backend.authService.dto;
 
 import jakarta.validation.constraints.NotBlank;
 

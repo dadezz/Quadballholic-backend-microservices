@@ -1,4 +1,4 @@
-package com.quadballholic.backend.authService.api;
+package com.quadballholic.backend.authService.dto;
 
 import com.quadballholic.backend.userService.enums.EnumUserRoleName;
 

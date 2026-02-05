@@ -1,9 +1,9 @@
 package com.quadballholic.backend.authService.service;
 
-import com.quadballholic.backend.authService.api.ResetPasswordRequest;
-import com.quadballholic.backend.authService.api.SignInRequest;
-import com.quadballholic.backend.authService.api.SignInResponse;
-import com.quadballholic.backend.authService.api.SignUpRequest;
+import com.quadballholic.backend.authService.dto.ResetPasswordRequest;
+import com.quadballholic.backend.authService.dto.SignInRequest;
+import com.quadballholic.backend.authService.dto.SignInResponse;
+import com.quadballholic.backend.authService.dto.SignUpRequest;
 import com.quadballholic.backend.authService.enums.EnumTokenType;
 import com.quadballholic.backend.authService.entity.EntityToken;
 import com.quadballholic.backend.common.service.EmailService;
@@ -62,10 +62,14 @@ public class AuthServiceImpl implements AuthService {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "To access your account please confirm your email");
         }
 
-        String accessTokenStr = jwtUtils.generateToken(user.getEmail());
-
         List<EnumUserRoleName> userRoles = user.getRole().stream()
                 .map(EntityRole::getRoleName).toList();
+
+        List<String> roleStrings = userRoles.stream()
+                .map(Enum::name)
+                .toList();
+
+        String accessTokenStr = jwtUtils.generateJwt(user.getId(), user.getEmail(), roleStrings);
 
         return new SignInResponse(
                         accessTokenStr,

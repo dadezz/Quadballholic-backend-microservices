@@ -1,13 +1,20 @@
-package com.quadballholic.backend.authService.api;
+package com.quadballholic.backend.authService.dto;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 
-public record SignInRequest(
+public record SignUpRequest(
+        @NotBlank
+        String name,
+
+        @NotBlank
+        String surname,
+
         @NotBlank
         @Email
         String email,
 
         @NotBlank
         String password
-) {}
+) {
+}
