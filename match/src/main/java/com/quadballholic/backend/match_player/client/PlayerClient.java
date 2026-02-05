@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 @FeignClient(name = "player-service")
 public interface PlayerClient {
 
-    @GetMapping("/api/players/{id}/positions")
+    @GetMapping("/api/players/{id}/position")
     String getPlayerPositionById(@PathVariable("id") Long playerId);
 
 }

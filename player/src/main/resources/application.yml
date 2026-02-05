@@ -1,0 +1,56 @@
+server:
+  port: 8085
+
+spring:
+  application:
+    name: player-service
+
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:5432/player_db
+    username: postgres
+    password: postgres
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+    show-sql: true
+
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: denizbayan4@gmail.com
+    password: fojmcaqnuzrtxpof
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:8761/eureka/
+
+quadballholic:
+  app:
+    jwtSecret: 00f45dFd74774edZa87ff253cdAe23759eb9Ce5a1142e4d8f873a4cXb491e6cc1
+    AccessTokenExpirationMs: 3600000
+    security:
+      public-paths: "/api/players/**"
+
+common:
+  frontend:
+    url: http://localhost:3000
+
+logging:
+  level:
+    org:
+      springframework:
+        web: DEBUG
+      hibernate: ERROR
