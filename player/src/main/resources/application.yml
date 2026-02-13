@@ -1,13 +1,13 @@
 server:
-  port: 8081
+  port: 8085
 
 spring:
   application:
-    name: user-service
+    name: player-service
 
   datasource:
     driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://localhost:5432/user_db
+    url: jdbc:postgresql://localhost:5432/player_db
     username: ${POSTGRES_USER}
     password: ${POSTGRES_PASSWORD}
 
@@ -39,17 +39,18 @@ eureka:
 
 quadballholic:
   app:
-    jwtSecret: ${JWT_SECRET}
+    jwtSecret: 00f45dFd74774edZa87ff253cdAe23759eb9Ce5a1142e4d8f873a4cXb491e6cc1
     AccessTokenExpirationMs: 3600000
     security:
-      public-paths: "/api/test-user/**, /api/auth/**"
-
+      public-paths: "/api/players/**"
 
 common:
   frontend:
     url: ${FE_URL}
 
-
-auth:
-  activationTokenExpirationMs: 3600000
-  passwordResetTokenExpirationMs: 3600000
+logging:
+  level:
+    org:
+      springframework:
+        web: DEBUG
+      hibernate: ERROR

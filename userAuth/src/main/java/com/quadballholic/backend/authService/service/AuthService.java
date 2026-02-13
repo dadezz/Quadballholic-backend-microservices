@@ -1,9 +1,9 @@
 package com.quadballholic.backend.authService.service;
 
-import com.quadballholic.backend.authService.api.ResetPasswordRequest;
-import com.quadballholic.backend.authService.api.SignInRequest;
-import com.quadballholic.backend.authService.api.SignInResponse;
-import com.quadballholic.backend.authService.api.SignUpRequest;
+import com.quadballholic.backend.authService.dto.ResetPasswordRequest;
+import com.quadballholic.backend.authService.dto.SignInRequest;
+import com.quadballholic.backend.authService.dto.SignInResponse;
+import com.quadballholic.backend.authService.dto.SignUpRequest;
 
 public interface AuthService {
 

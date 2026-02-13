@@ -26,6 +26,8 @@
         <module>common-library</module>
         <module>userAuth</module>
         <module>team</module>
+        <module>match</module>
+        <module>player</module>
     </modules>
 
     <dependencyManagement>

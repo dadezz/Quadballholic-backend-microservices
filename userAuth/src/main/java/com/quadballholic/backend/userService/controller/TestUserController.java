@@ -37,11 +37,7 @@ public class TestUserController {
 
     @PostMapping("")
     public ResponseEntity<?> createTestAccess(@RequestParam("role") String userRoleName) {
-        System.out.println("Request for " +userRoleName + " arrived");
-
-        for(EntityRole role : roleService.findAll()){
-            System.out.println(role.getRoleName());
-        }
+        System.out.println("Request for " + userRoleName + " arrived");
 
         EntityUser user = testUserService.getTestUserByRoleName(userRoleName);
         System.out.println(user);
@@ -49,9 +45,14 @@ public class TestUserController {
             return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
         }
 
-        String accessTokenStr = jwtUtils.generateToken(user.getEmail());
         List<EnumUserRoleName> userRoles = user.getRole().stream()
                 .map(EntityRole::getRoleName).toList();
+
+        List<String> roleStrings = userRoles.stream()
+                .map(Enum::name)
+                .toList();
+
+        String accessTokenStr = jwtUtils.generateJwt(user.getId(), user.getEmail(), roleStrings);
 
         return ResponseEntity.ok(Map.of(
                 "accessToken", accessTokenStr,

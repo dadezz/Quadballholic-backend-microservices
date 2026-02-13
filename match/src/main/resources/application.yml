@@ -1,13 +1,13 @@
 server:
-  port: 8081
+  port: 8082
 
 spring:
   application:
-    name: user-service
+    name: match-service
 
   datasource:
     driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://localhost:5432/user_db
+    url: jdbc:postgresql://localhost:5432/match_db
     username: ${POSTGRES_USER}
     password: ${POSTGRES_PASSWORD}
 
@@ -42,14 +42,8 @@ quadballholic:
     jwtSecret: ${JWT_SECRET}
     AccessTokenExpirationMs: 3600000
     security:
-      public-paths: "/api/test-user/**, /api/auth/**"
-
+      public-paths: "/api/matches/**"
 
 common:
   frontend:
     url: ${FE_URL}
-
-
-auth:
-  activationTokenExpirationMs: 3600000
-  passwordResetTokenExpirationMs: 3600000
