@@ -18,4 +18,6 @@ public interface UserService {
 
     Optional<EntityUser> findEntityUserByEmail(String email);
     Boolean userExists(String email);
+
+    boolean existsById(Long id);
 }

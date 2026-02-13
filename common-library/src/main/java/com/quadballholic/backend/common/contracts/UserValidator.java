@@ -16,4 +16,6 @@ public interface UserValidator {
     boolean hasRoleOrganizationManager(Long userId);
     boolean hasRoleTeamManager(Long userId);
     boolean hasRoleSpectator(Long userId);
+
+    void validateUserExists(Long userId);
 }

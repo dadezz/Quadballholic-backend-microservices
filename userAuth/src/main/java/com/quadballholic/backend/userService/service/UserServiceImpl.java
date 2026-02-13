@@ -118,4 +118,9 @@ public class UserServiceImpl implements UserService, UserServiceAPI {
         user.setPassword(newPasswordHash);
         userRepository.save(user);
     }
+
+    @Override
+    public boolean existsById(Long id){
+        return userRepository.existsById(id);
+    }
 }
