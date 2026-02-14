@@ -25,14 +25,21 @@ public class TestPlayerServiceImpl implements TestPlayerService {
     @Override
     public List<EntityPlayer> init() {
         if (playerRepository.count() > 0) {
-            log.info("Players already exist. Skipping initialization.");
-            return playerRepository.findAll();
+            playerRepository.deleteAll();
+            log.info("Players already exist. Deleting all players.");
+
         }
         log.info("Initializing Test Players... Fetching Teams from Team Service.");
         List<TeamDTO> teams;
         Map<String, Long> teamMap;
         try {
+            System.out.println("Fetching Teams from Team Service.");
             teams = teamClient.getAllTeams();
+            System.out.println("Fetched Teams from Team Service.");
+            for (TeamDTO team : teams) {
+                System.out.println(team.getId() + ": " +team.getName());
+            }
+
             teamMap = teams.stream()
                     .collect(Collectors.toMap(TeamDTO::getName, TeamDTO::getId));
         } catch (Exception e) {
@@ -47,18 +54,20 @@ public class TestPlayerServiceImpl implements TestPlayerService {
                     "Spain", 7L,
                     "Belgium", 8L
             );
-
         }
 
         List<EntityPlayer> allPlayers = new ArrayList<>();
-        if (teamMap.containsKey("Italy")) allPlayers.addAll(getItalyPlayers(teamMap.get("Italy")));
-        if (teamMap.containsKey("Turkey")) allPlayers.addAll(getTurkeyPlayers(teamMap.get("Turkey")));
-        if (teamMap.containsKey("USA")) allPlayers.addAll(getUSAPlayers(teamMap.get("USA")));
-        if (teamMap.containsKey("UK")) allPlayers.addAll(getUKPlayers(teamMap.get("UK")));
-        if (teamMap.containsKey("France")) allPlayers.addAll(getFrancePlayers(teamMap.get("France")));
-        if (teamMap.containsKey("Germany")) allPlayers.addAll(getGermanyPlayers(teamMap.get("Germany")));
-        if (teamMap.containsKey("Spain")) allPlayers.addAll(getSpainPlayers(teamMap.get("Spain")));
-        if (teamMap.containsKey("Belgium")) allPlayers.addAll(getBelgiumPlayers(teamMap.get("Belgium")));
+        for (String teamName : teamMap.keySet()) {
+            long teamId = teamMap.get(teamName);
+            if (teamName.contains("Italy")) allPlayers.addAll(getItalyPlayers(teamId));
+            if (teamName.contains("Turkey")) allPlayers.addAll(getTurkeyPlayers(teamId));
+            if (teamName.contains("USA")) allPlayers.addAll(getUSAPlayers(teamId));
+            if (teamName.contains("UK")) allPlayers.addAll(getUKPlayers(teamId));
+            if (teamName.contains("France")) allPlayers.addAll(getFrancePlayers(teamId));
+            if (teamName.contains("Germany")) allPlayers.addAll(getGermanyPlayers(teamId));
+            if (teamName.contains("Spain")) allPlayers.addAll(getSpainPlayers(teamId));
+            if (teamName.contains("Belgium")) allPlayers.addAll(getBelgiumPlayers(teamId));
+        }
 
         log.info("Saving {} test players to database.", allPlayers.size());
         return playerRepository.saveAll(allPlayers);

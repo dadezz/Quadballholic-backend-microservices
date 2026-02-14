@@ -33,6 +33,8 @@ spring:
             enable: true
 
 eureka:
+  instance:
+    prefer-ip-address: true
   client:
     serviceUrl:
       defaultZone: http://localhost:8761/eureka/
@@ -47,10 +49,3 @@ quadballholic:
 common:
   frontend:
     url: ${FE_URL}
-
-logging:
-  level:
-    org:
-      springframework:
-        web: DEBUG
-      hibernate: ERROR
