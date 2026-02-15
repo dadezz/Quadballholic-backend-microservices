@@ -10,7 +10,13 @@ spring:
         locator:
           enabled: true # automatic routing based on eureka
           lower-case-service-id: true
-
+      routes:
+        - id: live-game-websocket
+          uri: lb://live-game-events-service
+          predicates:
+            - Path=/ws-quadball/**
+          filters:
+            - PreserveHostHeader
 eureka:
   instance:
     hostname: localhost
