@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -45,6 +46,45 @@ public class MatchController {
     public ResponseEntity<List<Long>> startMatch(@PathVariable("id") Long id) {
         liveEventClient.startMatch(id);
         return new ResponseEntity<>(null, HttpStatus.OK);
+    }
+
+    @GetMapping("/{id}/get-match-date")
+    public ResponseEntity<LocalDate> getMatchDate(@PathVariable("id") Long id) {
+        return new ResponseEntity<>(matchService.getMatchById(id).getDate(), HttpStatus.OK);
+    }
+
+    @PatchMapping("/{id}/score")
+    public ResponseEntity<Void> updateMatchScore(
+            @PathVariable Long id,
+            @RequestParam int homeScore,
+            @RequestParam int awayScore) {
+
+        matchService.updateScore(id, homeScore, awayScore);
+        return ResponseEntity.ok().build();
+    }
+
+    @PatchMapping("/{id}/snitch-catch")
+    public ResponseEntity<Void> updateMatchSnitchCaught(
+            @PathVariable Long id,
+            @RequestParam Long catcherTeamId) {
+
+        matchService.updateMatchSnitchCaught(id, catcherTeamId);
+        return ResponseEntity.ok().build();
+    }
+
+    @PatchMapping("/{id}/set-team")
+    public ResponseEntity<Void> updateMatchTeamId(
+            @PathVariable Long id,
+            @RequestParam Long teamId) {
+        matchService.setNextMatchTeamId(id, teamId);
+        return ResponseEntity.ok().build();
+    }
+
+    @PatchMapping("/{id}/reset-match")
+    public ResponseEntity<Void> resetMatchSimulationById(
+            @PathVariable Long id) {
+        matchService.resetMatchSimulation(id);
+        return ResponseEntity.ok().build();
     }
 
 }

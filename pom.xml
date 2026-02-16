@@ -29,6 +29,8 @@
         <module>match</module>
         <module>player</module>
         <module>stadium</module>
+        <module>live-game-events</module>
+        <module>reservation</module>
     </modules>
 
     <dependencyManagement>
