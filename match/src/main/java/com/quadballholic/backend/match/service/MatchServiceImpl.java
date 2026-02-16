@@ -95,6 +95,28 @@ public class MatchServiceImpl implements MatchService {
         }
     }
 
+    @Override
+    public MatchEntity updateMatchSnitchCaught(Long id, Long catcherTeamId){
+
+        MatchEntity match = matchRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Match not found"));
+
+        match.setSnitchCaughtByTeamId(catcherTeamId);
+        return matchRepository.save(match);
+    }
+
+    @Override
+    public void resetMatchSimulation(Long id) {
+        Optional<MatchEntity> m = matchRepository.findById(id);
+        if(m.isPresent()){
+            MatchEntity match = m.get();
+            match.setAwayScore(0);
+            match.setHomeScore(0);
+            match.setSnitchCaughtByTeamId(null);
+            matchRepository.save(match);
+        }
+    }
+
     private void validateContent(MatchEntity match) {
         if (!tournamentClient.existsById(match.getTournamentId())) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Tournament not found");

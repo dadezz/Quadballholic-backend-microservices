@@ -12,4 +12,6 @@ public interface MatchService {
     List<MatchEntity> findAllMatchesByIds(List<Long> matchIds);
     void updateScore(Long matchId, int homeTeamScore, int awayTeamScore);
     void setNextMatchTeamId(Long matchId, Long teamId);
+    MatchEntity updateMatchSnitchCaught(Long id, Long catcherTeamId);
+    void resetMatchSimulation(Long id);
 }

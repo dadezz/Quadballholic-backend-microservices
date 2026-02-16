@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Quadball WebSocket Tester</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.6.1/sockjs.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+    <style>
+        body { font-family: sans-serif; padding: 20px; }
+        #log { border: 1px solid #ccc; padding: 10px; height: 300px; overflow-y: scroll; background: #f9f9f9; }
+        .event { margin-bottom: 5px; border-bottom: 1px solid #eee; }
+        .success { color: green; }
+        .error { color: red; }
+    </style>
+</head>
+<body>
+<h2>WebSocket Smoke Test</h2>
+<div>
+    <label>Match ID: <input type="text" id="matchId" value="1"></label>
+    <button onclick="connect()">Connect & Subscribe</button>
+</div>
+<hr/>
+<h3>Live Log</h3>
+<div id="log"></div>
+
+<script>
+    var stompClient = null;
+
+    function log(message, type = 'black') {
+        var logDiv = document.getElementById('log');
+        logDiv.innerHTML += `<div class="event" style="color:${type}">${message}</div>`;
+        logDiv.scrollTop = logDiv.scrollHeight; // Auto scroll
+    }
+
+    function connect() {
+        const matchId = document.getElementById('matchId').value;
+        // 1. The Endpoint URL defined in WebSocketConfig
+        const socket = new SockJS('http://localhost:8080/ws-quadball');
+        stompClient = Stomp.over(socket);
+
+        log("Attempting connection...", "blue");
+
+        stompClient.connect({}, function (frame) {
+            log('Connected: ' + frame, "green");
+
+            const subscribeUrl = '/topic/match/' + matchId + '/events';
+
+            log(`Subscribing to ${subscribeUrl}...`, "blue");
+
+            stompClient.subscribe(subscribeUrl, function (message) {
+                // This runs whenever an event arrives
+                log("Received Event: " + message.body);
+            });
+
+        }, function (error) {
+            log('Connection Error: ' + error, "red");
+        });
+    }
+</script>
+</body>
+</html>
