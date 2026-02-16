@@ -17,6 +17,23 @@ To satisfy the extreme **Elasticity (⭐⭐⭐⭐⭐)** requirement during live 
 
 ---
 
+## ✅ Pros vs ❌ Cons of this Architecture
+Pros:
+
+* Elasticity: We can spawn multiple instances of the Live Match Service during the World Cup, while keeping only 1 instance of the Core Service.
+
+* Fault Tolerance: If the Core Service goes down, the Live Match Service keeps broadcasting current scores via WebSockets.
+
+* Database Isolation: Enforced via our Docker configurations, preventing domains from corrupting each other's data.
+
+Cons:
+
+* High Operational Complexity: Requires orchestration, discovery services, and strict startup sequences.
+
+* Distributed Data: Keeping data consistent across services requires complex synchronization or event-driven patterns compared to the Monolithic MVP.
+
+---
+
 ## 🚀 How to Run (Local Environment)
 
 To run the Distributed Architecture locally, you need Docker (for the databases) and Java 21. Since this is a distributed system, services must be started in a specific order.
