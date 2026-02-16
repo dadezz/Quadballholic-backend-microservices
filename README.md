@@ -15,8 +15,6 @@ To satisfy the extreme **Elasticity (⭐⭐⭐⭐⭐)** requirement during live 
 3. **Core Backend Service:** Handles CRUD operations (Tournaments, Teams, Users). Connected to its own logical database.
 4. **Live Match Service (`live-game-events-service`):** An independent service handling WebSockets and the in-memory game state engine.
 
----
-
 ## ✅ Pros vs ❌ Cons of this Architecture
 Pros:
 
