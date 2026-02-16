@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -45,6 +46,11 @@ public class MatchController {
     public ResponseEntity<List<Long>> startMatch(@PathVariable("id") Long id) {
         liveEventClient.startMatch(id);
         return new ResponseEntity<>(null, HttpStatus.OK);
+    }
+
+    @GetMapping("/{id}/get-match-date")
+    public ResponseEntity<LocalDate> getMatchDate(@PathVariable("id") Long id) {
+        return new ResponseEntity<>(matchService.getMatchById(id).getDate(), HttpStatus.OK);
     }
 
     @PatchMapping("/{id}/score")
