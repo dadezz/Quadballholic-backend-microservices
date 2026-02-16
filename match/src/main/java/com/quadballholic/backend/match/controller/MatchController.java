@@ -47,4 +47,38 @@ public class MatchController {
         return new ResponseEntity<>(null, HttpStatus.OK);
     }
 
+    @PatchMapping("/{id}/score")
+    public ResponseEntity<Void> updateMatchScore(
+            @PathVariable Long id,
+            @RequestParam int homeScore,
+            @RequestParam int awayScore) {
+
+        matchService.updateScore(id, homeScore, awayScore);
+        return ResponseEntity.ok().build();
+    }
+
+    @PatchMapping("/{id}/snitch-catch")
+    public ResponseEntity<Void> updateMatchSnitchCaught(
+            @PathVariable Long id,
+            @RequestParam Long catcherTeamId) {
+
+        matchService.updateMatchSnitchCaught(id, catcherTeamId);
+        return ResponseEntity.ok().build();
+    }
+
+    @PatchMapping("/{id}/set-team")
+    public ResponseEntity<Void> updateMatchTeamId(
+            @PathVariable Long id,
+            @RequestParam Long teamId) {
+        matchService.setNextMatchTeamId(id, teamId);
+        return ResponseEntity.ok().build();
+    }
+
+    @PatchMapping("/{id}/reset-match")
+    public ResponseEntity<Void> resetMatchSimulationById(
+            @PathVariable Long id) {
+        matchService.resetMatchSimulation(id);
+        return ResponseEntity.ok().build();
+    }
+
 }

@@ -28,6 +28,7 @@
         <module>team</module>
         <module>match</module>
         <module>player</module>
+        <module>live-game-events</module>
     </modules>
 
     <dependencyManagement>
