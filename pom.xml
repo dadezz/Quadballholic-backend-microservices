@@ -30,6 +30,7 @@
         <module>player</module>
         <module>live-game-events</module>
         <module>reservation</module>
+        <module>tournaments</module>
     </modules>
 
     <dependencyManagement>

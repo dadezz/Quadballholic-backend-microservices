@@ -1,6 +1,8 @@
 package com.quadballholic.backend.match.service;
 
+import com.quadballholic.backend.match.dto.MatchDto;
 import com.quadballholic.backend.match.entity.MatchEntity;
+import jakarta.validation.Valid;
 
 import java.util.List;
 
@@ -14,4 +16,8 @@ public interface MatchService {
     void setNextMatchTeamId(Long matchId, Long teamId);
     MatchEntity updateMatchSnitchCaught(Long id, Long catcherTeamId);
     void resetMatchSimulation(Long id);
+
+    List<MatchDto> createMatches(@Valid List<MatchDto> matches);
+
+    Boolean existsById(Long id);
 }

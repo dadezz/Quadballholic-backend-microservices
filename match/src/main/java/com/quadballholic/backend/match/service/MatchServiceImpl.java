@@ -3,6 +3,8 @@ package com.quadballholic.backend.match.service;
 import com.quadballholic.backend.match.client.StadiumClient;
 import com.quadballholic.backend.match.client.TeamClient;
 import com.quadballholic.backend.match.client.TournamentClient;
+import com.quadballholic.backend.match.dto.MatchDto;
+import com.quadballholic.backend.match.dto.MatchMapper;
 import com.quadballholic.backend.match.entity.MatchEntity;
 import com.quadballholic.backend.match.repository.MatchRepository;
 import lombok.RequiredArgsConstructor;
@@ -10,6 +12,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -115,6 +118,22 @@ public class MatchServiceImpl implements MatchService {
             match.setSnitchCaughtByTeamId(null);
             matchRepository.save(match);
         }
+    }
+
+    @Override
+    public List<MatchDto> createMatches(List<MatchDto> matches) {
+        List<MatchDto> createdMatches = new ArrayList<>();
+        for (MatchDto m : matches) {
+
+            MatchEntity createdMatchEntity = createMatch(MatchMapper.toEntity(m));
+            createdMatches.add(MatchMapper.toDto(createdMatchEntity));
+        }
+        return createdMatches;
+    }
+
+    @Override
+    public Boolean existsById(Long id) {
+        return matchRepository.existsById(id);
     }
 
     private void validateContent(MatchEntity match) {
