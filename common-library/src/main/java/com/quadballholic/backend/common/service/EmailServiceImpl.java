@@ -8,8 +8,6 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
-
 @Service
 @RequiredArgsConstructor
 @ConditionalOnProperty(name = "spring.mail.host")
@@ -49,7 +47,7 @@ public class EmailServiceImpl implements EmailService {
         sendTextEmail(userMail, subject, body);
     }
 
-    public void sendReservationConfirmEmail(String userMail, LocalDate matchDateTime) {
+    public void sendReservationConfirmEmail(String userMail, String matchDateTime) {
         String subject = "Confirm your reservation";
 
         String body = "Hello,\n\n" +
