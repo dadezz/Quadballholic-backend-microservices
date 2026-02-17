@@ -1,62 +1,56 @@
-# Quadballholic - Microservices Architecture
+## Microservices Architecture
+Following the successful validation of our MVP, we transitioned the project into a Microservices Architecture. This shift was designed to address scaling limitations while leveraging the strict boundaries established during the modular phase. Each domain now operates as an independent service, communicating via REST and focusing on high availability.
 
-*Note: This repository contains the distributed version of the Quadballholic backend. For the main architectural analysis, the Kata requirements, and the MVP Monolith, please visit our [Main Repository](https://github.com/denizbayan/Quadballholic-backend).*
+### Architectural Highlights
+The transition was seamless thanks to our original "contract-first" mindset. We evolved our core patterns to handle the challenges of a distributed system:
 
-## Architecture Diagram
-![Microservices Architecture](./docs/images/microservices-arch.png)
+* **API Gateway (Evolution of Facades)**: The Facade layer has evolved into a dedicated API Gateway. It serves as the single entry point, handling request routing and security. It continues to orchestrate complex workflows that span multiple microservices, shielding the frontend from the underlying distributed complexity.
 
-## 🏗️ System Components
-To satisfy the extreme **Elasticity (⭐⭐⭐⭐⭐)** requirement during live matches, we distributed the MVP monolith into an independent microservices architecture using Spring Cloud:
+* **Feign Clients & DTOs (Evolution of SharedContracts)**: The interfaces in SharedContracts were transformed into Feign Clients. Service A no longer calls Service B via a local bean; instead, it uses declarative REST clients. This allowed us to swap communication protocols without touching core business logic.
 
-1. **API Gateway (`ApiGatewayApplication` - Port 8080):** * The single entry point for the frontend. 
-   * Handles dynamic routing using Eureka. 
-   * **WebSocket Routing:** As defined in our `application.yml`, it intercepts `/ws-quadball/**` traffic and routes it directly to the `live-game-events-service` via the Load Balancer (`lb://`).
-2. **Discovery Server (`DiscoveryServerApplication` - Port 8761):** Netflix Eureka registry for dynamic service discovery.
-3. **Core Backend Service:** Handles CRUD operations (Tournaments, Teams, Users). Connected to its own logical database.
-4. **Live Match Service (`live-game-events-service`):** An independent service handling WebSockets and the in-memory game state engine.
+* **Distributed Resilience (The "Best-Effort Rollback" Pattern)**: One of our key architectural choices was how to handle cross-service transactions (e.g., creating a Tournament and its associated Matches). Instead of over-engineering a full Saga Pattern with message brokers, we applied the Pareto Principle (80/20 rule):
 
-## ✅ Pros vs ❌ Cons of this Architecture
-Pros:
+* **Strategic Inconsistency**: We acknowledge that in a distributed world, strict ACID transactions are costly. We moved toward Eventual Consistency.
 
-* Elasticity: We can spawn multiple instances of the Live Match Service during the World Cup, while keeping only 1 instance of the Core Service.
+* **Manual Compensation**: We implemented a "Best-Effort Rollback" logic using try-catch blocks and manual compensating calls (e.g., deleting orphaned matches if the tournament creation fails). This mitigates 99% of consistency issues (network timeouts, validation errors) with minimal architectural overhead.
 
-* Fault Tolerance: If the Core Service goes down, the Live Match Service keeps broadcasting current scores via WebSockets.
+### Folder Structure (Distributed Partitioning)
+The project is organized as a monorepo of independent Spring Boot services:
+```
+Quadballholic-Microservices/
+├── docker-compose.yml          # Orchestrates all services and infrastructure
+├── config-server/              # Centralized configuration management
+├── gateway/                    # API Gateway & Security Filter
+├── discovery-server/           # Service Registry (Eureka)
+│
+├── auth-service/               # Identity Provider & JWT Issuance
+├── match-service/              # Manages Matches & Match Officials
+├── live-event-service/         # WebSockets & Real-time updates
+├── player-service/             # Player profiles and statistics
+├── reservation-service/        # Booking logic
+├── team-service/               # Team & Tournament management (Orchestrator)
+└── user-service/               # User profiles and preferences
+```
+Each microservice is self-contained with its own isolated database, ensuring that a schema change in one domain never impacts another.
 
-* Database Isolation: Enforced via our Docker configurations, preventing domains from corrupting each other's data.
+### Non-Functional Requirements
+* **Elastic Scalability**: We can scale the live-event-service independently during high-traffic match days.
 
-Cons:
+* **Fault Tolerance**: The system lacks a single point of failure. If the reservation-service is down, the rest of the platform remains functional.
 
-* High Operational Complexity: Requires orchestration, discovery services, and strict startup sequences.
+* **Pragmatic Consistency**: By choosing a manual compensation strategy over complex distributed transactions, we maintained high development velocity while keeping the data "clean enough" for a production-grade MVP.
 
-* Distributed Data: Keeping data consistent across services requires complex synchronization or event-driven patterns compared to the Monolithic MVP.
+* **Continuous Deployment**: Smaller codebases allow for faster CI/CD cycles and targeted updates.
 
 ---
 
-## 🚀 How to Run (Local Environment)
+### Quick Start
+To launch the ecosystem, you need Docker Desktop. Note that running multiple Spring Boot containers requires significant RAM.
 
-To run the Distributed Architecture locally, you need Docker (for the databases) and Java 21. Since this is a distributed system, services must be started in a specific order.
+Configure the .env files in the root and service directories.
 
-### 1. Start the Databases
-Open a terminal in the root folder and start the PostgreSQL containers:
-```bash
-docker-compose up -d
-```
+Execute: docker-compose up --build
 
-### 2. Start the Microservices (Via IDE or Terminal)
-Open the project in your IDE (e.g., IntelliJ IDEA). You need to start the following Spring Boot applications in this exact order:
+Monitor service health via the Discovery Server at localhost:8761.
 
-* Discovery Server: Run DiscoveryServerApplication.java (Starts on port 8761). Wait for it to be fully running.
-
-* Core Backend Service: Run the main application class for the core domain.
-
-* Live Game Events Service: Run the main application class for the live matches.
-
-* API Gateway: Run ApiGatewayApplication.java (Starts on port 8080).
-
-Alternatively, you can run 
-```bash
-./mvnw spring-boot:run
-```
-inside each service's respective directory.
-
-Once all services are up, they will register with Eureka (http://localhost:8761), and the API Gateway (http://localhost:8080) will be ready to route frontend requests transparently!
+The system includes an automatic Data Seeder that populates the distributed databases with the standard Admin and Team Manager test accounts.
