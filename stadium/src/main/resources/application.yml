@@ -1,0 +1,35 @@
+server:
+  port: 8089
+
+spring:
+  application:
+    name: stadium-service
+  datasource:
+    url: jdbc:postgresql://localhost:5432/stadium_db
+    username: ${POSTGRES_USER}
+    password: ${POSTGRES_PASSWORD}
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+
+quadballholic:
+  app:
+    jwtSecret: ${JWT_SECRET}
+    AccessTokenExpirationMs: 3600000
+    security:
+      public-paths: "/api/stadiums/**"
+
+common:
+  frontend:
+    url: ${FE_URL}
+
+eureka:
+  instance:
+    hostname: localhost
+    prefer-ip-address: true
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:8761/eureka/

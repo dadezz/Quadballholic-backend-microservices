@@ -28,9 +28,11 @@
         <module>team</module>
         <module>match</module>
         <module>player</module>
+        <module>stadium</module>
         <module>live-game-events</module>
         <module>reservation</module>
         <module>tournaments</module>
+        <module>match_official</module>
     </modules>
 
     <dependencyManagement>
