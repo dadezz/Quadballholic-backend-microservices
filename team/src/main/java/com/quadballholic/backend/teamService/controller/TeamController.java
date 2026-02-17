@@ -2,6 +2,7 @@ package com.quadballholic.backend.teamService.controller;
 
 import com.quadballholic.backend.teamService.entity.EntityTeam;
 import com.quadballholic.backend.teamService.service.TeamService;
+import com.quadballholic.backend.teamService.validator.TeamValidatorImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,6 +17,7 @@ import java.util.List;
 public class TeamController {
 
     private final TeamService teamService;
+    private final TeamValidatorImpl teamValidatorImpl;
 
     @PostMapping("")
     @PreAuthorize("hasRole('ORGANIZATION_MANAGER')")
@@ -46,6 +48,11 @@ public class TeamController {
     public ResponseEntity<Void> deleteTeam(@PathVariable("id") Long id) {
         teamService.deleteTeam(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/{id}/exists")
+    public ResponseEntity<Boolean> exists(@PathVariable("id") Long id) {
+        return ResponseEntity.ok(teamValidatorImpl.exists(id));
     }
 
     /*
