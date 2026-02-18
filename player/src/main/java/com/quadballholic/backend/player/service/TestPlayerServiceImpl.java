@@ -5,6 +5,7 @@ import com.quadballholic.backend.player.dto.TeamDTO;
 import com.quadballholic.backend.player.enums.EnumPlayerPosition;
 import com.quadballholic.backend.player.model.EntityPlayer;
 import com.quadballholic.backend.player.repository.PlayerRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -23,56 +24,49 @@ public class TestPlayerServiceImpl implements TestPlayerService {
     private final TeamClient teamClient;
 
     @Override
+    @Transactional
     public List<EntityPlayer> init() {
+        log.info("Initializing Test Players... Fetching Teams from Team Service.");
+
+        List<TeamDTO> teams;
+        try {
+            teams = teamClient.getAllTeams();
+            if (teams == null || teams.isEmpty()) {
+                throw new RuntimeException("Team list is empty, Team Service might not be fully initialized.");
+            }
+            log.info("Fetched {} teams from Team Service.", teams.size());
+        } catch (Exception e) {
+            log.error("Failed to connect to Team Service: {}", e.getMessage());
+            throw e;
+        }
+
         if (playerRepository.count() > 0) {
             playerRepository.deleteAll();
-            log.info("Players already exist. Deleting all players.");
-
+            playerRepository.flush();
+            log.info("Old players deleted.");
         }
-        log.info("Initializing Test Players... Fetching Teams from Team Service.");
-        List<TeamDTO> teams;
-        Map<String, Long> teamMap;
-        try {
-            System.out.println("Fetching Teams from Team Service.");
-            teams = teamClient.getAllTeams();
-            System.out.println("Fetched Teams from Team Service.");
-            for (TeamDTO team : teams) {
-                System.out.println(team.getId() + ": " +team.getName());
-            }
 
-            teamMap = teams.stream()
-                    .collect(Collectors.toMap(TeamDTO::getName, TeamDTO::getId));
-        } catch (Exception e) {
-            log.error("Could not fetch teams from Team Service. Is it running?", e);// TODO: Delete this after team service is implemented
-            teamMap = Map.of(
-                    "Italy", 1L,
-                    "Turkey", 2L,
-                    "USA", 3L,
-                    "UK", 4L,
-                    "France", 5L,
-                    "Germany", 6L,
-                    "Spain", 7L,
-                    "Belgium", 8L
-            );
-        }
+        Map<String, Long> teamMap = teams.stream()
+                .collect(Collectors.toMap(TeamDTO::getName, TeamDTO::getId, (id1, id2) -> id1));
 
         List<EntityPlayer> allPlayers = new ArrayList<>();
-        for (String teamName : teamMap.keySet()) {
-            long teamId = teamMap.get(teamName);
+        for (Map.Entry<String, Long> entry : teamMap.entrySet()) {
+            String teamName = entry.getKey();
+            Long teamId = entry.getValue();
+
             if (teamName.contains("Italy")) allPlayers.addAll(getItalyPlayers(teamId));
-            if (teamName.contains("Turkey")) allPlayers.addAll(getTurkeyPlayers(teamId));
-            if (teamName.contains("USA")) allPlayers.addAll(getUSAPlayers(teamId));
-            if (teamName.contains("UK")) allPlayers.addAll(getUKPlayers(teamId));
-            if (teamName.contains("France")) allPlayers.addAll(getFrancePlayers(teamId));
-            if (teamName.contains("Germany")) allPlayers.addAll(getGermanyPlayers(teamId));
-            if (teamName.contains("Spain")) allPlayers.addAll(getSpainPlayers(teamId));
-            if (teamName.contains("Belgium")) allPlayers.addAll(getBelgiumPlayers(teamId));
+            else if (teamName.contains("Turkey")) allPlayers.addAll(getTurkeyPlayers(teamId));
+            else if (teamName.contains("USA")) allPlayers.addAll(getUSAPlayers(teamId));
+            else if (teamName.contains("UK")) allPlayers.addAll(getUKPlayers(teamId));
+            else if (teamName.contains("France")) allPlayers.addAll(getFrancePlayers(teamId));
+            else if (teamName.contains("Germany")) allPlayers.addAll(getGermanyPlayers(teamId));
+            else if (teamName.contains("Spain")) allPlayers.addAll(getSpainPlayers(teamId));
+            else if (teamName.contains("Belgium")) allPlayers.addAll(getBelgiumPlayers(teamId));
         }
 
         log.info("Saving {} test players to database.", allPlayers.size());
         return playerRepository.saveAll(allPlayers);
     }
-
     private List<EntityPlayer> getItalyPlayers(Long teamId) {
         return List.of(
                 new EntityPlayer("Stefano Turrini", EnumPlayerPosition.KEEPER, teamId, 5),

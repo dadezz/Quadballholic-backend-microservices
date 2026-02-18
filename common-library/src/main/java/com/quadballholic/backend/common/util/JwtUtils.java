@@ -21,8 +21,8 @@ public class JwtUtils {
 
     private static final Logger logger  = LoggerFactory.getLogger(JwtUtils.class);
 
-    @Value("${quadballholic.app.jwtSecret}")
-    private String jwtSecret;
+
+    private String jwtSecret = "00f45dFd74774edZa87ff253cdAe23759eb9Ce5a1142e4d8f873a4cXb491e6cc1";
 
     @Getter
     @Value("${quadballholic.app.AccessTokenExpirationMs:3600000}")

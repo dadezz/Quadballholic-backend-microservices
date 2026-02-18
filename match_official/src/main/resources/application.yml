@@ -3,7 +3,7 @@ server:
 
 spring:
   application:
-    name: match_official-service
+    name: match-official-service
     debug: true
 
   datasource:
@@ -19,13 +19,12 @@ spring:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
         format_sql: true
-    show-sql: true
 
   mail:
     host: smtp.gmail.com
     port: 587
-    username: ${MAIL_USERNAME}
-    password: ${MAIL_PASSWORD}
+    username: ${MAIL_USERNAME:false}
+    password: ${MAIL_PASSWORD:false}
     properties:
       mail:
         smtp:
@@ -42,11 +41,20 @@ eureka:
 
 quadballholic:
   app:
-    jwtSecret: 00f45dFd74774edZa87ff253cdAe23759eb9Ce5a1142e4d8f873a4cXb491e6cc1
+    jwtSecret: ${JWT_SECRET}
     AccessTokenExpirationMs: 3600000
     security:
-      public-paths: "/api/officials/**"
+      public-paths: "/api/officials/**, /api/officials"
 
 common:
   frontend:
     url: ${FE_URL}
+
+management:
+  health:
+    mail:
+      enabled: false
+  endpoints:
+    web:
+      exposure:
+        include: health,info

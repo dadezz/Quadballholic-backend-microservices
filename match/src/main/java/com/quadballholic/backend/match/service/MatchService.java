@@ -20,4 +20,5 @@ public interface MatchService {
     List<MatchDto> createMatches(@Valid List<MatchDto> matches);
 
     Boolean existsById(Long id);
+    List<MatchEntity> getAllMatches();
 }

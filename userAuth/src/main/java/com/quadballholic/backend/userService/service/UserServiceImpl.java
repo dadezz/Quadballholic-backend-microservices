@@ -1,5 +1,7 @@
 package com.quadballholic.backend.userService.service;
 
+import com.quadballholic.backend.common.service.EmailService;
+import com.quadballholic.backend.common.service.MockEmailService;
 import com.quadballholic.backend.userService.api.RegisterUserCommand;
 import com.quadballholic.backend.userService.api.UserServiceAPI;
 import com.quadballholic.backend.userService.enums.EnumUserRoleName;
@@ -8,7 +10,6 @@ import com.quadballholic.backend.userService.entity.EntityRole;
 import com.quadballholic.backend.userService.entity.EntityUser;
 import com.quadballholic.backend.userService.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -21,9 +22,9 @@ import java.util.Set;
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService, UserServiceAPI {
 
-    @Autowired
     private final UserRepository userRepository;
     private final RoleService roleService;
+    private final EmailService emailService;
 
     @Override
     public Optional<EntityUser> getUserById(Long id) {
@@ -91,6 +92,10 @@ public class UserServiceImpl implements UserService, UserServiceAPI {
                 command.email(),
                 command.passwordHash()
         );
+
+        if (emailService instanceof MockEmailService) {
+            user.setStatus(EnumUserStatus.ACTIVE);
+        }
 
         EntityRole spectator = roleService.findByRoleName(EnumUserRoleName.ROLE_SPECTATOR);
         user.addUserRole(spectator);

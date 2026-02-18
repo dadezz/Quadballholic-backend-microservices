@@ -1,4 +1,4 @@
-package com.quadballholic.backend.teamService.app;
+package com.quadballholic.backend.teamService;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

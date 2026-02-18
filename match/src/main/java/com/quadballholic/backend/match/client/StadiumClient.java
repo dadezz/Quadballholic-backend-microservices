@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 
 @FeignClient(name = "stadium-service" , contextId = "stadiumClientForMatches")
 public interface StadiumClient {
-    @GetMapping("/api/stadiums/{id}")
+    @GetMapping("/api/stadium/{id}")
     Boolean existsById(@PathVariable("id") Long stadiumId);
 }
 

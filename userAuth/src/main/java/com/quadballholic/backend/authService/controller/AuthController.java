@@ -11,6 +11,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
+
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
 @RequestMapping("/api/auth")
@@ -39,7 +41,8 @@ public class AuthController {
     }
 
     @PostMapping("/forget-password")
-    public ResponseEntity<String> forgetPassword(@RequestParam("email") String email) {
+    public ResponseEntity<String> forgetPassword(@RequestBody Map<String,String> body) {
+        String email = body.get("email");
         authService.requestPasswordReset(email);
         return new ResponseEntity<>("If an account exists with that email, a password reset link has been sent", HttpStatus.OK);
     }

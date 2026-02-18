@@ -1,4 +1,4 @@
-package com.quadballholic.backend.apiGateway.app;
+package com.quadballholic.backend.apiGateway;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

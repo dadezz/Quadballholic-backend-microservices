@@ -18,7 +18,7 @@ public class TournamentManagementController {
     private final TournamentOrchestratorService to;
 
     @PostMapping("/{id}")
-    @PreAuthorize("hasAuthority('ROLE_ORGANIZATION_MANAGER')")
+    @PreAuthorize("hasRole('ORGANIZATION_MANAGER')")
     public ResponseEntity<List<List<MatchDto>>> startTournaments(@PathVariable("id") Long id,
                                                                  @RequestBody @Valid StartTournamentRequestDTO request) {
         return ResponseEntity.ok(

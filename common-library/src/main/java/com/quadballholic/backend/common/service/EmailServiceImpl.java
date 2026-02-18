@@ -2,7 +2,7 @@ package com.quadballholic.backend.common.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.scheduling.annotation.Async;
@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-@ConditionalOnProperty(name = "spring.mail.host")
+@ConditionalOnExpression("!'${spring.mail.username}'.equals('false') && !'${spring.mail.password}'.equals('false')")
 public class EmailServiceImpl implements EmailService {
 
     private final JavaMailSender mailSender;
@@ -27,6 +27,19 @@ public class EmailServiceImpl implements EmailService {
 
         String body = "Hello,\n\n" +
                 "Thank you for signing up to our project. Click the link below to activate your account:\n\n" +
+                link + "\n\n" +
+                "If you did not request this, you can safely ignore this email.\n" +
+                "This link will expire in 15 minutes.";
+
+        sendTextEmail(userMail, subject, body);
+    }
+
+    public void sendAccountCreatedEmail(String userMail, String token) {
+        String subject = "Access your Quadballholic Account";
+        String link = frontendUrl + "/reset-password?token=" + token;
+
+        String body = "Hello,\n\n" +
+                "You've been registered to our system by managers. Click the link below to access your account:\n\n" +
                 link + "\n\n" +
                 "If you did not request this, you can safely ignore this email.\n" +
                 "This link will expire in 15 minutes.";

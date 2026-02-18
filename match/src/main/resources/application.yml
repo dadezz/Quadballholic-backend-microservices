@@ -18,13 +18,12 @@ spring:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
         format_sql: true
-    show-sql: true
 
   mail:
     host: smtp.gmail.com
     port: 587
-    username: ${MAIL_USERNAME}
-    password: ${MAIL_PASSWORD}
+    username: ${MAIL_USERNAME:false}
+    password: ${MAIL_PASSWORD:false}
     properties:
       mail:
         smtp:
@@ -44,8 +43,17 @@ quadballholic:
     jwtSecret: ${JWT_SECRET}
     AccessTokenExpirationMs: 3600000
     security:
-      public-paths: "/api/matches/**"
+      public-paths: "/api/matches/**, /api/matches"
 
 common:
   frontend:
     url: ${FE_URL}
+
+management:
+  health:
+    mail:
+      enabled: false
+  endpoints:
+    web:
+      exposure:
+        include: health,info

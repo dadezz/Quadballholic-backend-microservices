@@ -136,6 +136,11 @@ public class MatchServiceImpl implements MatchService {
         return matchRepository.existsById(id);
     }
 
+    @Override
+    public List<MatchEntity> getAllMatches() {
+        return matchRepository.findAll();
+    }
+
     private void validateContent(MatchEntity match) {
         if (!tournamentClient.existsById(match.getTournamentId())) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Tournament not found");

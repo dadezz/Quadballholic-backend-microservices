@@ -44,4 +44,13 @@ public class UserController {
                 .map(user -> ResponseEntity.ok(user.getId()))
                 .orElse(ResponseEntity.notFound().build());
     }
+
+    @GetMapping("/{id}/name")
+    public ResponseEntity<String> getUserName(@PathVariable("id") Long id) {
+        String username = userService.getUserById(id)
+                .map(EntityUser::getName)
+                .orElse("Unknown");
+
+        return ResponseEntity.ok(username);
+    }
 }

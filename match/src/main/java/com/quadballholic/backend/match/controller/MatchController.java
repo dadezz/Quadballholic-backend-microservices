@@ -121,4 +121,9 @@ public class MatchController {
         return ResponseEntity.noContent().build();
     }
 
+    @GetMapping
+    public ResponseEntity<List<MatchEntity>> getAllMatches() {
+        return ResponseEntity.ok(matchService.getAllMatches());
+    }
+
 }

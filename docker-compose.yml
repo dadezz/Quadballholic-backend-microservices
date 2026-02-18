@@ -1,19 +1,211 @@
 services:
-
-  postgres:
-    image: postgres:16-alpine
-    container_name: quadball-postgres
+  # --- LEVEL 0: INFRASTRUCTURE ---
+  db:
+    image: postgres:14-alpine
+    container_name: quadball_microservices_db
     environment:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     ports:
       - "5432:5432"
     volumes:
-      # script that creates user_db, tournament_db, ecc. on startup
       - ./docker/postgres/init-dbs.sh:/docker-entrypoint-initdb.d/init-dbs.sh
-    networks:
-      - quadball-net
+
+  discovery-server:
+    image: ec2m/quadball-microservice-discovery_server:latest
+    container_name: discovery_server
+    build:
+      context: .
+      dockerfile: discoveryServer/Dockerfile
+    ports:
+      - "8761:8761"
+
+  # --- LEVEL 1.0: INDEPENDENT SERVICES ---
+  match-official-service:
+    image: ec2m/quadball-microservice-match-official:latest
+    build:
+      context: .
+      dockerfile: match_official/Dockerfile
+    environment: &common-env
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://discovery-server:8761/eureka/
+      SPRING_DATASOURCE_USERNAME: ${POSTGRES_USER}
+      SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD}
+      # JWT Secret from environment variable
+      JWT_SECRET: ${JWT_SECRET}
+      FE_URL: ${FE_URL}
+      MAIL_USERNAME: ${MAIL_USERNAME}
+      MAIL_PASSWORD: ${MAIL_PASSWORD}
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/user_db
+    ports:
+      - "8088:8088"
+    depends_on:
+      - db
+      - discovery-server
+
+  stadium-service:
+    image: ec2m/quadball-microservice-stadium:latest
+    build:
+      context: .
+      dockerfile: stadium/Dockerfile
+    environment:
+      <<: *common-env
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/stadium_db
+      SERVER_PORT: 8089
+    ports:
+      - "8089:8089"
+    depends_on:
+      - db
+      - discovery-server
+
+  # --- LEVEL 1: FOUNDATION SERVICES ---
+  user-service:
+    image: ec2m/quadball-microservice-user_auth:latest
+    container_name: user_service
+    build:
+      context: .
+      dockerfile: userAuth/Dockerfile
+    environment:
+      <<: *common-env
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/user_db
+      SERVER_PORT: 8081
+    ports:
+      - "8081:8081"
+    depends_on:
+      - db
+      - discovery-server
+
+
+  team-service:
+    image: ec2m/quadball-microservice-team:latest
+    build:
+      context: .
+      dockerfile: team/Dockerfile
+    environment:
+      <<: *common-env
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/team_db
+      SERVER_PORT: 8083
+    ports:
+      - "8083:8083"
+    depends_on:
+      - user-service
+      - db
+      - discovery-server
+
+  # --- LEVEL 2: MICROSERVICES ---
+  match-service:
+    image: ec2m/quadball-microservice-match:latest
+    build:
+      context: .
+      dockerfile: match/Dockerfile
+    environment:
+      <<: *common-env
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/match_db
+      SERVER_PORT: 8082
+    ports:
+      - "8082:8082"
+    depends_on:
+      - db
+      - discovery-server
+      - team-service
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8082/actuator/health" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+
+  player-service:
+    image: ec2m/quadball-microservice-player:latest
+    build:
+      context: .
+      dockerfile: player/Dockerfile
+    environment:
+      <<: *common-env
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/player_db
+      SERVER_PORT: 8085
+    ports:
+      - "8085:8085"
+    depends_on:
+      - db
+      - discovery-server
+      - team-service
+
+  tournament-service:
+    image: ec2m/quadball-microservice-tournaments:latest
+    build:
+      context: .
+      dockerfile: tournaments/Dockerfile
+    environment:
+      <<: *common-env
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/tournament_db
+      SERVER_PORT: 8087
+    ports:
+      - "8087:8087"
+    depends_on:
+      - db
+      - discovery-server
+      - player-service
+
+  reservation-service:
+    image: ec2m/quadball-microservice-reservation:latest
+    build:
+      context: .
+      dockerfile: reservation/Dockerfile
+    environment:
+      <<: *common-env
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/reservation_db
+      SERVER_PORT: 8086
+    ports:
+      - "8086:8086"
+    depends_on:
+      - db
+      - discovery-server
+      - tournament-service
+
+
+  live-game-events-service:
+    image: ec2m/quadball-microservice-live_game_events:latest
+    build:
+      context: .
+      dockerfile: live-game-events/Dockerfile
+    environment:
+      <<: *common-env
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/live_game_events_db
+      SERVER_PORT: 8084
+    ports:
+      - "8084:8084"
+    depends_on:
+      - db
+      - discovery-server
+      - reservation-service
+
+  api-gateway:
+    image: ec2m/quadball-microservice-api-gateway:latest
+    container_name: api_gateway
+    build:
+      context: .
+      dockerfile: apiGateway/Dockerfile
+    ports:
+      - "8080:8080"
+    environment:
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://discovery-server:8761/eureka/
+      FE_URL: "http://localhost:3000"
+      COMMON_FRONTEND_URL: "http://localhost:3000"
+      SERVER_PORT: 8080
+    depends_on:
+      - live-game-events-service
+      - discovery-server
+
+  frontend:
+    image: ec2m/quadballholic-frontend:latest
+    container_name: quadball_frontend
+    ports:
+      - "3000:3000"
+    environment:
+      REACT_APP_API_URL: http://localhost:8080
+    depends_on:
+      - api-gateway
 
 networks:
-  quadball-net:
-    driver: bridge
+  default:
+    name: quadball_network

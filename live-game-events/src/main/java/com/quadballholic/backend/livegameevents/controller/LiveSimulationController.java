@@ -18,7 +18,7 @@ public class LiveSimulationController {
 
     // Mappiamo direttamente l'URL "classico" qui, anche se siamo in un altro modulo!
     @PostMapping("/matches/{id}/start-match")
-    @PreAuthorize("hasAuthority('ROLE_ORGANIZATION_MANAGER')")
+    @PreAuthorize("hasRole('ORGANIZATION_MANAGER')")
     public ResponseEntity<Void> startSimulation(@PathVariable("id") Long matchId) {
         liveGameEventService.startMatchSimulation(matchId);
         return ResponseEntity.ok().build();
