@@ -1,0 +1,11 @@
+docker push ec2m/quadball-microservice-reservation:latest
+docker push ec2m/quadball-microservice-discovery_server:latest
+docker push ec2m/quadball-microservice-live_game_events:latest
+docker push ec2m/quadball-microservice-match:latest
+docker push ec2m/quadball-microservice-player:latest
+docker push ec2m/quadball-microservice-team:latest
+docker push ec2m/quadball-microservice-match-official:latest
+docker push ec2m/quadball-microservice-user_auth:latest
+docker push ec2m/quadball-microservice-tournaments:latest
+docker push ec2m/quadball-microservice-api-gateway:latest
+docker push ec2m/quadball-microservice-stadium:latest
