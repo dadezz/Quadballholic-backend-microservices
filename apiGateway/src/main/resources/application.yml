@@ -1,17 +1,90 @@
 server:
   port: 8080
-
 spring:
   application:
     name: api-gateway
   cloud:
     gateway:
+      default-filters:
+        - DedupeResponseHeader=Access-Control-Allow-Origin Access-Control-Allow-Credentials
       discovery:
         locator:
-          enabled: true # automatic routing based on eureka
+          enabled: true # Enable automatic routing based on Eureka service registry
           lower-case-service-id: true
+      routes:
+        # User Service (Auth, Test-User, Users)
+        - id: user-service
+          uri: lb://user-service
+          predicates:
+            - Path=/api/auth/**, /api/test-user/**, /api/users/**, /api/auth, /api/test-user, /api/users
+
+        # Player Service
+        - id: player-service
+          uri: lb://player-service
+          predicates:
+            - Path=/api/players/**, /api/players
+
+        # Match Service
+        - id: match-service
+          uri: lb://match-service
+          predicates:
+            - Path=/api/matches/**, /api/match-player/**, /api/matches, /api/match-player
+
+        # Match Official Service
+        - id: match-official-service
+          uri: lb://match-official-service
+          predicates:
+            - Path=/api/officials/**, /api/officials
+
+        # Reservation Service
+        - id: reservation-service
+          uri: lb://reservation-service
+          predicates:
+            - Path=/api/reservations/**, /api/reservations
+
+        # Stadium Service
+        - id: stadium-service
+          uri: lb://stadium-service
+          predicates:
+            - Path=/api/stadium/**, /api/stadium
+
+        # Team Service
+        - id: team-service
+          uri: lb://team-service
+          predicates:
+            - Path=/api/teams/**, /api/teams
+
+        # Tournament Service
+        - id: tournament-service
+          uri: lb://tournament-service
+          predicates:
+            - Path=/api/tournament-management/**, /api/tournaments/**, /api/tournament-management, /api/tournaments
+
+        # Live Game Events (WebSocket Support)
+        - id: live-game-events-service
+          uri: lb://live-game-events-service
+          predicates:
+            - Path=/ws-quadball/**
+          filters:
+            - PreserveHostHeader # Crucial for WebSocket handshakes
 
 eureka:
+  instance:
+    prefer-ip-address: true # Essential for correct service discovery inside Docker
   client:
     serviceUrl:
-      defaultZone: http://localhost:8761/eureka/
+      # Replace 'discovery-server' with your Eureka container name in docker-compose
+      defaultZone: http://discovery-server:8761/eureka/
+
+common:
+  frontend:
+    url: ${FE_URL}
+
+management:
+  health:
+    mail:
+      enabled: false
+  endpoints:
+    web:
+      exposure:
+        include: health,info

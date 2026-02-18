@@ -1,0 +1,34 @@
+# Stage 1: Build stage
+FROM maven:3.9.6-eclipse-temurin-21-alpine AS build
+WORKDIR /app
+
+# 1. Copy the Root Parent POM and install it to the local .m2 repository
+# This prevents "parent not found" errors for the sub-modules
+COPY pom.xml .
+RUN mvn install -N -DskipTests
+
+# 2. IMPORTANT: Copy and INSTALL the Common Library
+# This must be built first as other services depend on this JAR
+COPY common-library/pom.xml common-library/
+COPY common-library/src common-library/src
+RUN mvn -f common-library/pom.xml clean install -DskipTests
+
+# 3. Copy the match_official module files
+COPY match_official/pom.xml match_official/
+COPY match_official/src match_official/src
+
+# 4. Build command
+# Common library is now in the local maven repository, so no errors
+RUN mvn -f match_official/pom.xml clean package -DskipTests
+
+# Stage 2: Runtime stage
+FROM eclipse-temurin:21-jre-alpine
+WORKDIR /app
+
+RUN apk add --no-cache curl
+
+# Copy the executable JAR file
+COPY --from=build /app/match_official/target/*.jar app.jar
+
+EXPOSE 8088
+ENTRYPOINT ["java", "-jar", "app.jar"]

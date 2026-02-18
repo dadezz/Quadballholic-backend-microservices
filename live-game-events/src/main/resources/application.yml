@@ -1,0 +1,65 @@
+server:
+  port: 8084
+
+spring:
+  application:
+    name: live-game-events-service
+
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:5432/live_game_events_db
+    username: ${POSTGRES_USER}
+    password: ${POSTGRES_PASSWORD}
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: ${MAIL_USERNAME:false}
+    password: ${MAIL_PASSWORD:false}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+
+eureka:
+  instance:
+    prefer-ip-address: true
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:8761/eureka/
+
+quadballholic:
+  app:
+    jwtSecret: ${JWT_SECRET}
+    AccessTokenExpirationMs: 3600000
+    security:
+      public-paths: "/api/live-game-events/**, /api/auth/**"
+
+
+common:
+  frontend:
+    url: ${FE_URL}
+
+
+auth:
+  activationTokenExpirationMs: 3600000
+  passwordResetTokenExpirationMs: 3600000
+
+management:
+  health:
+    mail:
+      enabled: false
+  endpoints:
+    web:
+      exposure:
+        include: health,info
