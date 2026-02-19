@@ -1,0 +1,9 @@
+CREATE DATABASE match_db;
+CREATE DATABASE user_db;
+CREATE DATABASE live_game_events_db;
+CREATE DATABASE match_official_db;
+CREATE DATABASE reservation_db;
+CREATE DATABASE player_db;
+CREATE DATABASE tournament_db;
+CREATE DATABASE stadium_db;
+CREATE DATABASE team_db;

@@ -9,7 +9,7 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - ./docker/postgres/init-dbs.sh:/docker-entrypoint-initdb.d/init-dbs.sh
+      - ./docker/postgres/init-dbs.sql:/docker-entrypoint-initdb.d/init-dbs.sql
 
   discovery-server:
     image: ec2m/quadball-microservice-discovery_server:latest
