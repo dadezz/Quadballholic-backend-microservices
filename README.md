@@ -46,8 +46,9 @@ Each microservice is self-contained with its own isolated database, ensuring tha
 To launch the ecosystem, you need Docker Desktop. Note that running multiple Spring Boot containers could require a significant amount of RAM.
 
 Configure the .env files in the root and service directories.
-
-Execute: `docker-compose up --build`
+There is the .env-sample file which includes all keys required. You can simply rename the file as .env or copy& paste the content.
+If you want emailServices to be working, you must replace the related fields in .env file with proper inputs. Otherwise, email services will not be active
+Execute: `docker-compose up`
 
 Monitor service health via the Discovery Server at `localhost:8761`.
 
